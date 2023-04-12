@@ -38,7 +38,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "organization",
+    'cloudinary_storage',
+    'cloudinary',
+    "corsheaders",
+    "rest_framework.authtoken",
+    'rest_framework_simplejwt',
+    'user',
+    'project',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +131,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dilgnd55s',
+    'API_KEY': '784371511373533',
+    'API_SECRET': 'u2NB0XwH5VOEBT2E_SK0NxGXld0',
+}
+
+MEDIA_URL = 'media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+AUTH_USER_MODEL = "user.User"
+CORS_ALLOW_ALL_ORIGINS=True

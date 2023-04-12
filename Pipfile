@@ -11,6 +11,8 @@ django-filter = "*"
 django-cors-headers = "*"
 cloudinary = "*"
 djangorestframework-simplejwt = "*"
+pillow = "*"
+django-cloudinary-storage = "*"
 
 [dev-packages]
 
