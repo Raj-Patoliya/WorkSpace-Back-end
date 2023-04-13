@@ -10,6 +10,8 @@ class Role(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    class Meta:
+        db_table = "role"
 
 class User(AbstractBaseUser,PermissionsMixin):
     username = None
@@ -24,11 +26,12 @@ class User(AbstractBaseUser,PermissionsMixin):
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
-    role = models.ForeignKey(Role,related_name="role",on_delete=models.CASCADE,default=1)
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     object = CustomUserManager()
 
     def __str__(self):
         return f"{self.email}"
+
+    class Meta:
+        db_table = "user"
