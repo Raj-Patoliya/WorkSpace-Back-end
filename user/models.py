@@ -18,7 +18,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     fullName = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-    profile = models.ImageField(upload_to='images/', blank=True, max_length=1000)
+    profile = models.TextField()
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -35,3 +35,12 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     class Meta:
         db_table = "user"
+
+class ProfileAvtar(models.Model):
+    image = models.ImageField(upload_to="avtar",blank=True,max_length=1000)
+
+    class Meta:
+        db_table = "user_profile"
+
+    def __str__(self):
+        return f"{self.image}"
