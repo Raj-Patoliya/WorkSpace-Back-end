@@ -10,5 +10,5 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Role)
 class UserRole(admin.ModelAdmin):
     list_display = [
-        'id','name','description'
+        'id','name','description',
     ]
