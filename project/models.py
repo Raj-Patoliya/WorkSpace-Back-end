@@ -21,3 +21,12 @@ class Team(models.Model):
 
     class Meta:
         db_table = "team"
+
+class StaredProjects(models.Model):
+    project = models.ForeignKey(Project,related_name="project",on_delete=models.CASCADE)
+    user = models.ForeignKey(User,related_name="likedBy",on_delete=models.CASCADE)
+    created_date = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
+
+    class Meta:
+        db_table = "stared_projects"

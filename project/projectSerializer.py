@@ -17,7 +17,12 @@ class ProjectTeamSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class ProjectSerializer(serializers.ModelSerializer):
     team = ProjectTeamSerializer(read_only=True,many=True)
+    owner = serializers.SerializerMethodField()
 
+    def get_owner(self,obj):
+        user = UserProfileSerializer(obj.created_by)
+        print(user.data)
+        return User.objects.filter(pk=user.data["id"]).values('id','profile','fullName')
     class Meta:
         model = Project
         fields = '__all__'
