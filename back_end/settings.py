@@ -150,6 +150,16 @@ REST_FRAMEWORK = {
                'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
   }
+
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'social_core.backends.google.GoogleOAuth2',
+# ]
+#
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "262127144528-i2ub3eulilaflshi1l1gqth3kpjc1jp6.apps.googleusercontent.com"
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+
+
 from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
