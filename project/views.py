@@ -76,6 +76,4 @@ class AllProjectForUser(APIView):
         res["last_login"] = serializer.data["last_login"]
         res["created_at"] = serializer.data["created_at"]
         res["updated_at"] = serializer.data["updated_at"]
-        res["groups"] = []
-        res["user_permissions"] = []
         return Response({"data":res})

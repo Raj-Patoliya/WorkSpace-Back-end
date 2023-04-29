@@ -14,7 +14,6 @@ class Priority(models.Model):
 
     class Meta:
         db_table = "priority"
-
 class IssueType(models.Model):
     name = models.CharField(max_length=50)
     icon = models.ImageField(upload_to='icons/', blank=True, max_length=1000)
@@ -32,6 +31,7 @@ class Issue(models.Model):
     due_date = models.DateField()
     project = models.ForeignKey(Project,related_name="projects",on_delete=models.CASCADE)
     issue_type = models.ForeignKey(IssueType,related_name="issue_type",on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User,related_name="created_by",on_delete=models.CASCADE)
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField()
@@ -47,7 +47,6 @@ class Comment(models.Model):
 
     class Meta:
         db_table = "comment"
-
 class ActivityLog(models.Model):
     issue_id = models.ForeignKey(Issue, related_name="activityLog", on_delete=models.CASCADE)
     user = models.ForeignKey(User,related_name="user",on_delete=models.CASCADE)
@@ -59,7 +58,6 @@ class ActivityLog(models.Model):
 
     class Meta:
         db_table = "activityLog"
-
 class Attachment(models.Model):
     issue_id = models.ForeignKey(Issue, related_name="attachment", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="uploadedBy", on_delete=models.CASCADE)

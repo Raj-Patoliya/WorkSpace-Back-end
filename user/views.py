@@ -22,6 +22,5 @@ class UserRegistration(APIView):
 
 
 class UserProfile(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
     queryset = ProfileAvtar.objects.all()
     serializer_class = ProfileSerializer
