@@ -4,12 +4,18 @@ class UserRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = '__all__'
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ["password"]
 
-class ProfileSerializer(serializers.ModelSerializer):
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id","fullName","email","profile"]
+
+class ProfileAvtarSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileAvtar
         fields = "__all__"

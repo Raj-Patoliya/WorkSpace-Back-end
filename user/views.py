@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView,Response
 from rest_framework import generics
-from .serializer import UserProfileSerializer,ProfileSerializer
+from .serializer import UserListSerializer,ProfileAvtarSerializer
 from .models import *
 class UserRegistration(APIView):
     def post(self, request):
@@ -23,4 +23,9 @@ class UserRegistration(APIView):
 
 class UserProfile(generics.ListCreateAPIView):
     queryset = ProfileAvtar.objects.all()
-    serializer_class = ProfileSerializer
+    serializer_class = ProfileAvtarSerializer
+
+class UsersList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserListSerializer
