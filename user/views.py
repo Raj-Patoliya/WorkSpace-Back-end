@@ -27,5 +27,5 @@ class UserProfile(generics.ListCreateAPIView):
 
 class UsersList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserListSerializer
