@@ -3,8 +3,8 @@ from issue.models import *
 @admin.register(Issue)
 class Issue(admin.ModelAdmin):
     list_display = ["id",'issue_summary','project_id',
-                    'issue_key','issue_description','priority','status','assignee','reporter',
-                    'due_date','issue_type','created_date','updated_date']
+                    'issue_description','priority','status','assignee','reporter',
+                    'issue_type','created_date','updated_date']
 @admin.register(IssueType)
 class IssueType(admin.ModelAdmin):
     list_display = ['id','name','icon']
