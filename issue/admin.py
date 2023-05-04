@@ -22,5 +22,5 @@ class ActivityLog(admin.ModelAdmin):
     list_display = ['id','issue_id','user_id','activityType','prev','latest','created_date']
 @admin.register(Attachment)
 class Attachment(admin.ModelAdmin):
-    list_display = []
+    list_display = ["id","issue_id","attachment_file","created_date"]
 

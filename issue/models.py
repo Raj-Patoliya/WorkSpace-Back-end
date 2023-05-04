@@ -1,22 +1,24 @@
 from django.db import models
 from user.models import *
 from project.models import *
+from django.core.files.storage import FileSystemStorage
+from cloudinary_storage.storage import MediaCloudinaryStorage
 # Create your models here.
 class Status(models.Model):
     name = models.CharField(max_length=50)
-    icon = models.ImageField(upload_to='icons/', blank=True, max_length=1000)
+    icon = models.ImageField(upload_to='icons/',storage=MediaCloudinaryStorage(), blank=True, max_length=1000)
 
     class Meta:
         db_table = "status"
 class Priority(models.Model):
     name = models.CharField(max_length=50)
-    icon = models.ImageField(upload_to='icons/', blank=True, max_length=1000)
+    icon = models.ImageField(upload_to='icons/',storage=MediaCloudinaryStorage(), blank=True, max_length=1000)
 
     class Meta:
         db_table = "priority"
 class IssueType(models.Model):
     name = models.CharField(max_length=50)
-    icon = models.ImageField(upload_to='icons/', blank=True, max_length=1000)
+    icon = models.ImageField(upload_to='icons/',storage=MediaCloudinaryStorage(), blank=True, max_length=1000)
 
     class Meta:
         db_table = "issue_type"
@@ -57,7 +59,6 @@ class ActivityLog(models.Model):
         db_table = "activityLog"
 class Attachment(models.Model):
     issue_id = models.ForeignKey(Issue, related_name="attachment", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="uploadedBy", on_delete=models.CASCADE)
-    attachment_file = models.ImageField(upload_to='attachment/', blank=True, max_length=1000)
+    attachment_file = models.FileField(upload_to='documents/',max_length=1000,storage=FileSystemStorage())
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)

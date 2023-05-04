@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -127,7 +128,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -139,9 +139,12 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '784371511373533',
     'API_SECRET': 'u2NB0XwH5VOEBT2E_SK0NxGXld0',
 }
-
+STATIC_URL = "static/"
 MEDIA_URL = 'media/'  # or any prefix you choose
+MEDIA_ROOT = os.path.join(BASE_DIR, 'attachments')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 AUTH_USER_MODEL = "user.User"
 CORS_ALLOW_ALL_ORIGINS = True
