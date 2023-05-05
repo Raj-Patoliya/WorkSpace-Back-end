@@ -4,9 +4,9 @@ from rest_framework.views import APIView,Response
 from rest_framework.permissions import IsAuthenticated
 from project.models import Project, Team
 from user.models import User,Role
-from project.projectSerializer import ProjectSerializer,ProjectTeamSerializer,UserProjectSerializer
+from project.projectSerializer import ProjectIssueSerializer, ProjectSerializer,ProjectTeamSerializer,UserProjectSerializer
 from django.http import Http404
-
+from issue.issueSerializer import *
 
 class UserProjectCRUD(APIView):
     permission_classes = [IsAuthenticated]
@@ -77,3 +77,14 @@ class AllProjectForUser(APIView):
         res["created_at"] = serializer.data["created_at"]
         res["updated_at"] = serializer.data["updated_at"]
         return Response({"data":res})
+
+class ProjectIssueView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,keys):
+        print(request.data)
+        print(keys)
+        project = Project.objects.filter(key=keys).first()
+        serializer = ProjectIssueSerializer(project)
+        return Response({"data":serializer.data})
+

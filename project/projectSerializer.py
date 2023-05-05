@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from user.serializer import *
+from issue.issueSerializer import *
 from user.models import User,Role
 from project.models import *
+from issue.models import *
 
 class ProjectTeamSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -29,7 +31,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 class UserProjectSerializer(serializers.ModelSerializer):
     projects = ProjectSerializer(read_only=True,many=True)
 
-
     class Meta:
         model = User
         exclude = ["password"]
@@ -49,3 +50,15 @@ class AllProjectOfUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+class ProjectIssueSerializer(serializers.ModelSerializer):
+    team = ProjectTeamSerializer(many=True)
+    issue = serializers.SerializerMethodField()
+
+    def get_issue(self,obj):
+        data = Issue.objects.filter(project_id=obj.id).values("id","issue_summary","issue_description","reporter","assignee","status","priority","issue_type")
+        return data
+
+    class Meta:
+        model = Project
+        fields = ['team',"issue"]

@@ -72,3 +72,60 @@ class IssueCRUDVIEW(APIView):
         else:
             print(serializer.errors)
 
+
+class UpdateIssueFields(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(pk=issue_id)
+        except Issue.DoesNotExist:
+            return Response({"error": "Issue not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.data["field"] == 'status':
+            try:
+                status_obj = Status.objects.get(pk=int(request.data["value"]))
+                print(status_obj)
+            except Status.DoesNotExist:
+                return Response({"error": "Status not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            issue.status = status_obj
+            print(issue.status)
+
+        elif request.data["field"] == 'priority_id':
+            try:
+                priority_obj = Priority.objects.get(pk=int(request.data["value"]))
+            except Priority.DoesNotExist:
+                return Response({"error": "Priority not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            issue.priority = priority_obj
+
+        elif request.data["field"] == 'assignee_id':
+            try:
+                assignee_obj = User.objects.get(pk=int(request.data["value"]))
+            except User.DoesNotExist:
+                return Response({"error": "Assignee not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            issue.assignee = assignee_obj
+
+        elif request.data["field"] == 'reporter_id':
+            try:
+                reporter_obj = User.objects.get(pk=int(request.data["value"]))
+            except User.DoesNotExist:
+                return Response({"error": "Reporter not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            issue.reporter = reporter_obj
+
+        elif request.data["field"] == 'issue_type_id':
+            try:
+                issue_type_obj = IssueType.objects.get(pk=int(request.data["value"]))
+            except IssueType.DoesNotExist:
+                return Response({"error": "Issue Type not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            issue.issue_type = issue_type_obj
+
+        else:
+            setattr(issue, request.data["field"], request.data["value"])
+
+        issue.save()
+        return Response({"message": "Fields updated successfully."})
