@@ -9,17 +9,17 @@ from django.http import Http404
 from issue.issueSerializer import *
 
 class UserProjectCRUD(APIView):
-    permission_classes = [IsAuthenticated]
-    def get_object(self, pk):
-        try:
-            return User.objects.filter(pk=pk).get()
-        except Project.DoesNotExist:
-            raise Http404
+    # permission_classes = [IsAuthenticated]
+    # def get_object(self, pk):
+    #     try:
+    #         return User.objects.filter(pk=pk).get()
+    #     except Project.DoesNotExist:
+    #         raise Http404
 
-    def get(self,request):
-        user = self.get_object(pk=request.user.id)
-        serializer = UserProjectSerializer(user)
-        return Response({"data": serializer.data})
+    def get(self,request,keys):
+        project = Project.objects.filter(key=keys).first()
+        serializer = ProjectSerializer(project, read_only=True)
+        return Response(serializer.data)
 
     def post(self,request):
         project = Project()
@@ -82,9 +82,9 @@ class ProjectIssueView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,keys):
-        print(request.data)
-        print(keys)
-        project = Project.objects.filter(key=keys).first()
-        serializer = ProjectIssueSerializer(project)
+        serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=keys), many=True)
+        # project = Project.objects.filter(key=keys).first()
+        # serializer = ProjectIssueSerializer(Issue.objects.all(),many=True)
+        print(serializer.data)
         return Response({"data":serializer.data})
 
