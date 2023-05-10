@@ -48,4 +48,4 @@ class IssueCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ('id', 'issue_summary', 'issue_description', 'priority', 'status', 'assignee', 'reporter',
-                  'project','issue_type', 'created_date', 'updated_date')
+                  'project','issue_type', 'created_date', 'updated_date',"index")

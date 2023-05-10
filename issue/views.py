@@ -40,7 +40,9 @@ class IssueCRUDVIEW(APIView):
     serializer_class = IssueSerializer
 
     def post(self,request):
-        project = Project.objects.filter(title=request.data["project"]).values("id").first()
+        project = Project.objects.filter(key=request.data["project"]).values("id").first()
+        lastIndex = Issue.objects.filter(project_id=project["id"],status=int(request.data["status"])).order_by('-index').values("index").first()
+
         data = {
             "project": project["id"],
             "issue_type": int(request.data["issueType"]),
@@ -50,6 +52,7 @@ class IssueCRUDVIEW(APIView):
             "issue_summary": request.data["summary"],
             "assignee": int(request.data["assignee"]),
             "reporter": int(request.data["reporter"]),
+            "index":lastIndex["index"]+1,
             "updated_date": datetime.datetime.now()
         }
         serializer = IssueCRUDSerializer(data=data)
@@ -68,10 +71,11 @@ class IssueCRUDVIEW(APIView):
                     serializer.save()
                 else:
                     print(serializer.errors)
-            return Response({"msg": serializer.data})
+                    return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"created": "issue Created successfully."}, status=status.HTTP_200_OK)
         else:
             print(serializer.errors)
-
+            return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
 
 class UpdateIssueFields(APIView):
     permission_classes = [IsAuthenticated]
@@ -126,6 +130,5 @@ class UpdateIssueFields(APIView):
 
         else:
             setattr(issue, request.data["field"], request.data["value"])
-
         issue.save()
-        return Response({"message": "Fields updated successfully."})
+        return Response({"message": "Fields updated successfully."},status=status.HTTP_200_OK)

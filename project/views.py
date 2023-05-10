@@ -4,12 +4,12 @@ from rest_framework.views import APIView,Response
 from rest_framework.permissions import IsAuthenticated
 from project.models import Project, Team
 from user.models import User,Role
-from project.projectSerializer import ProjectIssueSerializer, ProjectSerializer,ProjectTeamSerializer,UserProjectSerializer
+from project.projectSerializer import *
 from django.http import Http404
 from issue.issueSerializer import *
 
 class UserProjectCRUD(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     # def get_object(self, pk):
     #     try:
     #         return User.objects.filter(pk=pk).get()
@@ -79,7 +79,7 @@ class AllProjectForUser(APIView):
         return Response({"data":res})
 
 class ProjectIssueView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self,request,keys):
         serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=keys), many=True)
@@ -88,3 +88,23 @@ class ProjectIssueView(APIView):
         print(serializer.data)
         return Response({"data":serializer.data})
 
+class TeamCrudView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self,request,keys):
+        # print(keys)
+        serializer = ProjectTeamSerializer(Team.objects.filter(project__key=keys), many=True)
+        # print(serializer.data)
+        return Response({"data":serializer.data})
+
+    def post(self,request):
+        data = {
+            "project":int(request.data["project"]),
+            "role":int(request.data["role"]),
+            "user":int(request.data["user"]),
+        }
+        serializer = AddTeamMemberSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"data":serializer.data},status=status.HTTP_200_OK)
+        return Response({"Error": serializer.errors},status=status.HTTP_500_INTERNAL_SERVER_ERROR)

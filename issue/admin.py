@@ -2,8 +2,8 @@ from django.contrib import admin
 from issue.models import *
 @admin.register(Issue)
 class Issue(admin.ModelAdmin):
-    list_display = ["id",'issue_summary','project_id',
-                    'issue_description','priority','status','assignee','reporter',
+    list_display = ["id",'index','status','issue_summary','project_id',
+                    'issue_description','priority','assignee','reporter',
                     'issue_type','created_date','updated_date']
 @admin.register(IssueType)
 class IssueType(admin.ModelAdmin):

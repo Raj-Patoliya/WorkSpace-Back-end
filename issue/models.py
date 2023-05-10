@@ -31,6 +31,7 @@ class Issue(models.Model):
     reporter = models.ForeignKey(User,related_name="reporter",on_delete=models.CASCADE)
     project = models.ForeignKey(Project,related_name="projects",on_delete=models.CASCADE)
     issue_type = models.ForeignKey(IssueType,related_name="issue_type",on_delete=models.CASCADE)
+    index = models.IntegerField()
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField()
