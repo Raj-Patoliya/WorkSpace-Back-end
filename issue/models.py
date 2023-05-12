@@ -41,7 +41,7 @@ class Issue(models.Model):
 class Comment(models.Model):
     issue_id = models.ForeignKey(Issue,related_name="comment",on_delete=models.CASCADE)
     user_id = models.ForeignKey(User,related_name="commentator",on_delete=models.CASCADE)
-    text = models.TextField()
+    comment_text = models.TextField()
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
 

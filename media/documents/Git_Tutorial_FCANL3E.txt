@@ -1,0 +1,334 @@
+-- Git Config
+
+git config --global user.name "Your Name"
+
+git config --global user.email "Your Email" 
+
+-- Locla Git States
+
+- Working Directory
+- Staging Area
+- Repository (.git)
+- Remote Repo.
+
+-- Create README.md File
+
+touch README.md
+
+-- Check Git Status
+
+git status
+
+-- Add Files In Staging Area
+
+git add .
+
+git add --all
+
+git add -A
+
+git add filename.ext
+
+-- Commit Command
+
+git commit
+
+git commit -m "Your Message"
+
+-- Remove Files
+
+cd ..
+
+rm -rf .git
+
+-- List All Files
+
+ls -a
+
+-- Commit Detail's
+
+git log
+
+git log --oneline
+
+git log --oneline --graph
+
+git show
+
+-- Commit Express
+
+git commit -a
+
+git commit -am "Your Message"
+
+-- Backing Out Changes	
+
+/ * Unstaged Changes after reset */
+
+git reset HEAD filename.ext
+
+/ * Discard The Changes In Working Directory */
+
+git checkout -- filename.ext
+
+-- History and Making New Commands With Alias
+
+git help log
+
+git log --oneline --graph --decorate --all
+
+git config --global alias.hist "log --oneline --graph --decorate --all"
+
+git config --global --list
+
+git hist
+
+git hist -- filename.ext
+
+-- Rename and Delete Files
+
+git rm filename.ext
+
+-- Managing Files Outside Of Git
+
+touch filename.ext
+
+ls -a
+
+mv filename.ext newname.ext
+
+ls -l
+
+rm filename.ext
+
+git add -u
+
+-- Comparing Differences
+
+git config --global alias.hist "log --oneline --graph --decorate --all"
+
+git hist
+
+/* Commit History */
+
+* 5a05d32 (HEAD -> master) New Updates
+* 076f8a0 New
+* 6f30ed0 deleting demo file
+* 7aefe16 Demo File Added
+* 09aac84 Renaming Command
+* bda83a4 Commit Express
+* 8353e28 New Commit
+* cdd5ed6 First file in demo repo
+
+/* Here cdd5ed6 is commit id in Commit History & HEAD is latest commit id */
+
+git diff cdd5ed6 HEAD 
+
+/*
+
+Branching & Merge Types
+
+Branch = Timeline Of Commits
+
+Branch Names are Labels
+ - Deletion Removes Labels Only
+
+*/
+
+-- Types Of Merges
+
+ * Fast-Forward
+   - Simplest Case
+   - Like Never Branched (Commits On Destination)
+   - Can Be Disabled
+
+ * Automatic
+   - Non-Conflicting Merge Detected
+   - Preserves both Timelines
+   - Merge Commit on Destination
+
+ * Manual
+   - Automatic Merge Not Possible
+   - Conflicting Merge State
+   - Changes Saved in Merge Commit
+
+-- Special Markers
+
+ * HEAD - Last Commit 
+  - Points to Last Commit of Current Branch
+  - Can be Moved (Advanced)
+
+-- Simple Branching Example
+
+/* List of Branches */
+
+git branch
+
+/* Create New Branch */
+
+git branch branch-name
+
+/* Switch Branch */
+
+git checkout branch-name
+
+/* Create & Switch Branch */
+
+git checkout -b branch-name
+
+/* Merge Branch */
+
+git merge branch-name
+
+/* Delete Branch */
+
+git branch -d branch-name
+
+-- Conflict Resolution	
+ 
+-- Marking Special Events With Tagging
+
+/* Create New Tag */
+
+git tag tag-name
+
+git tag -a v1.0 -m "Commit Message"
+
+/* Tag List */
+
+git tag --list
+
+/* Delete Tag */
+
+git tag -d tag-name
+
+-- Saving Work In Progress With Stashing
+
+git stash
+
+git stash list
+
+git stash pop
+
+git stash apply stash{index} 
+
+-- Time Travel With Reset & Reflog
+
+git reset commit-id --soft
+git reset commit-id --mixed
+git reset commit-id --hard
+
+git reflog
+git reset --hard head-id
+git reset --mixed head-id
+git reset --soft head-id
+
+
+-- Remote Repository Commands
+
+/* After Commit */
+
+git push
+
+/* If Any File Changed In Github */
+
+git fetch
+git pull
+git push
+
+/* Check version remote repository */
+
+git remote -v
+
+/*
+
+origin  git@github.com:Prafulm8o6/website.git (fetch)
+origin  git@github.com:Prafulm8o6/website.git (push)
+
+*/
+
+git remote show origin
+
+/* Rename the local repository */
+
+git remote set-url git@github.com:Prafulm8o6/website.git
+
+/* Check Details Of  */
+
+git remote show origin
+
+/*
+
+* remote origin
+  Fetch URL: git@github.com:Prafulm8o6/website.git
+  Push  URL: git@github.com:Prafulm8o6/website.git
+  HEAD branch: main
+  Remote branch:
+    main tracked
+  Local branch configured for 'git pull':
+    main merges with remote main
+  Local ref configured for 'git push':
+    main pushes to main (up to date)
+
+*/
+
+-- Local Remote Repo.
+
+git push -u origin branch-name
+
+/* List all remotes/origin/branch */
+
+git branch -a
+
+/* delete the remotes/origin/branch */
+
+git branch -d branch-name
+
+/* remove the reference of deleted remotes/origin/branch */
+
+git fetch -p
+
+
+-- tag
+
+/* List the tags */
+
+git tag
+
+/* Create new tag */
+
+git tag tag-name origin-branch-name
+
+/* Create -a tags */
+
+git tag -a tag-name -m "Your Message" commit-id
+
+Ex:- git tag -a v0.1-alpha -m "Release 0.1 (Alpha)" commit-id
+
+/* push tag on github repository */
+
+git push origin tag-name
+
+/* Delete tag from local repo. */
+
+git tag -d tag-name
+
+/* Delete repository ta from local repo. */
+
+git push origin :tag-name
+
+/* push all tag to github repo.  */
+
+git push --tags
+
+/* Updating tags creating a floating tag */
+
+git tag -f tag-name commit-id
+
+/* Push Updated tag */
+
+git push --force origin tag-name 
+
+
+
+

@@ -17,16 +17,12 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-fkw)$nhn^v3#eh4-ehps64*3$bj8*kr$yxkfh8jsv1o7rz17up"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -140,9 +136,9 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'u2NB0XwH5VOEBT2E_SK0NxGXld0',
 }
 STATIC_URL = "static/"
-MEDIA_URL = 'media/'  # or any prefix you choose
-MEDIA_ROOT = os.path.join(BASE_DIR, 'attachments')
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
 

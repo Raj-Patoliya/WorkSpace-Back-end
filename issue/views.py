@@ -28,7 +28,7 @@ class CommentCRUDVIEW(ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 class AttachmentCRUDVIEW(ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
 class ActivityLogCRUDVIEW(ListCreateAPIView):
@@ -78,7 +78,15 @@ class IssueCRUDVIEW(APIView):
             return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
 
 class UpdateIssueFields(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+
+    def get(self,request,issue_id):
+        try:
+            issue = Issue.objects.get(pk=issue_id)
+            serializer = IssueSerializer(issue)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Issue.DoesNotExist:
+            return Response({"error": serializer.errors}, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, issue_id):
         try:

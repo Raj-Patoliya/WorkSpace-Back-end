@@ -79,13 +79,12 @@ class AllProjectForUser(APIView):
         return Response({"data":res})
 
 class ProjectIssueView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request,keys):
         serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=keys), many=True)
         # project = Project.objects.filter(key=keys).first()
         # serializer = ProjectIssueSerializer(Issue.objects.all(),many=True)
-        print(serializer.data)
         return Response({"data":serializer.data})
 
 class TeamCrudView(APIView):

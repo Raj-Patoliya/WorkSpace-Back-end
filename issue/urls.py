@@ -13,4 +13,4 @@ urlpatterns = [
     path("issue-activityLog",ActivityLogCRUDVIEW.as_view(),name="issue-activityLog"),
     path("issues",IssueCRUDVIEW.as_view(),name="issues"),
     path("issue-update/<int:issue_id>",UpdateIssueFields.as_view(),name="issues"),
-]+static(settings.MEDIA_URL,documents_root=settings.MEDIA_ROOT)
+]
