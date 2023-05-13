@@ -62,7 +62,7 @@ class IssueSerializer(serializers.ModelSerializer):
     priority = PrioritySerializer(read_only=True)
     issue_type = IssueTypeSerializer(read_only=True)
     comment = CommentSerializer(read_only=True,partial=True,many=True)
-    attachment = AttachmentSerializer(read_only=True,partial=True,many=True)
+    attachment = AttachmentSerializer(partial=True,many=True)
     activityLog = ActivityLogSerializer(read_only=True,partial=True,many=True)
 
     def get_project(self,obj):

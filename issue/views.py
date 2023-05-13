@@ -140,3 +140,19 @@ class UpdateIssueFields(APIView):
             setattr(issue, request.data["field"], request.data["value"])
         issue.save()
         return Response({"message": "Fields updated successfully."},status=status.HTTP_200_OK)
+
+class PostCommentIssue(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self,request,issue_id):
+        comment = Comment.objects.filter(issue_id=issue_id).values("id", "issue_id", "user_id", "comment_text", "created_date")
+        serializer = CommentSerializer(data=comment,many=True)
+        print(comment)
+        if serializer.is_valid():
+            return Response({'success':serializer.data},status=status.HTTP_200_OK)
+        else:
+            return Response({'success':serializer.errors},status=status.HTTP_200_OK)
+
+    def post(self,request,pk):
+        print()
+        return Response({'success':"msg"},status=status.HTTP_200_OK)

@@ -13,4 +13,5 @@ urlpatterns = [
     path("issue-activityLog",ActivityLogCRUDVIEW.as_view(),name="issue-activityLog"),
     path("issues",IssueCRUDVIEW.as_view(),name="issues"),
     path("issue-update/<int:issue_id>",UpdateIssueFields.as_view(),name="issues"),
+    path("issue-comment/<int:issue_id>",PostCommentIssue().as_view(),name="comment")
 ]
