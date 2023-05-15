@@ -2,6 +2,7 @@ import django.contrib.auth
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
 from .usermanager import CustomUserManager
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 class Role(models.Model):
     name = models.CharField(max_length=50,unique=True)
@@ -37,7 +38,7 @@ class User(AbstractBaseUser,PermissionsMixin):
         db_table = "user"
 
 class ProfileAvtar(models.Model):
-    image = models.ImageField(upload_to="avtar",blank=True,max_length=1000)
+    image = models.ImageField(upload_to="avtar",blank=True,max_length=1000,storage=MediaCloudinaryStorage())
 
     class Meta:
         db_table = "user_profile"

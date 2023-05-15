@@ -11,20 +11,19 @@ class AddTeamMemberSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        # This method will validate the entire serializer data
         team = Team.objects.filter(user_id=data['user'], project_id=data["project"]).first()
         if team:
             raise serializers.ValidationError("Member Already Exist")
         return data
 
 class ProjectTeamSerializer(serializers.ModelSerializer):
-    role = serializers.SerializerMethodField()
+    # role = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
 
     def get_user(self,obj):
         return User.objects.filter(pk=obj.user_id).values('id','profile','fullName')
-    def get_role(self,obj):
-        return Role.objects.filter(pk=obj.role_id).values('id','name')
+    # def get_role(self,obj):
+    #     return Role.objects.filter(pk=obj.role_id).values('id','name')
 
     class Meta:
         model = Team

@@ -19,6 +19,11 @@ class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
         fields = "__all__"
+
+class CreateCommentatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = "__all__"
 class CommentSerializer(serializers.ModelSerializer):
     commentator = serializers.SerializerMethodField()
 
@@ -40,14 +45,14 @@ class ActivityLogSerializer(serializers.ModelSerializer):
 
 
 class ProjectTeamSerializer(serializers.ModelSerializer):
-    role = serializers.SerializerMethodField()
+    # role = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
 
     def get_user(self,obj):
-        return User.objects.filter(pk=obj.user_id).values('id','profile','fullName')
+        return User.objects.filter(pk=obj.user_id).values('id','profile','fullName').first()
 
-    def get_role(self,obj):
-        return Role.objects.filter(pk=obj.role_id).values('id','name')
+    # def get_role(self,obj):
+    #     return Role.objects.filter(pk=obj.role_id).values('id','name')
 
     class Meta:
         model = Team

@@ -136,7 +136,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'u2NB0XwH5VOEBT2E_SK0NxGXld0',
 }
 STATIC_URL = "static/"
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -199,3 +199,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+AWS_ACCESS_KEY_ID = 'AKIAT4IHTDHG7UPIHDXP'
+AWS_SECRET_ACCESS_KEY = 'BM1Mw2ZAf5eYwmFGTFPafssLVmdKmOpHXA6rUM/oszYs'
+AWS_REGION_NAME = 'us-west-2'

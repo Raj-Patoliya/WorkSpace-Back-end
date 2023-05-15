@@ -8,7 +8,8 @@ class UserRoleSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ["password"]
+        fields = ["id","fullName","profile","email"]
+
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:

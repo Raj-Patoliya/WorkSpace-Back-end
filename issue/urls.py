@@ -12,6 +12,8 @@ urlpatterns = [
     path("issue-attachment",AttachmentCRUDVIEW.as_view(),name="issue-attachment"),
     path("issue-activityLog",ActivityLogCRUDVIEW.as_view(),name="issue-activityLog"),
     path("issues",IssueCRUDVIEW.as_view(),name="issues"),
-    path("issue-update/<int:issue_id>",UpdateIssueFields.as_view(),name="issues"),
-    path("issue-comment/<int:issue_id>",PostCommentIssue().as_view(),name="comment")
+    path("issue-update/<int:issue_id>",UpdateIssueFields.as_view(),name="update-issues"),
+    path("issue-comment-create",PostCommentIssue().as_view(),name="create-comment"),
+    path("issue-comment-delete/<int:pk>",PostCommentIssue().as_view(),name="delete-comment"),
+    path("issue-comment-update/<int:pk>",PostCommentIssue().as_view(),name="update-comment"),
 ]

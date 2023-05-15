@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import boto3
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +9,25 @@ from rest_framework import status
 from issue.issueSerializer import *
 from issue.models import *
 from rest_framework.views import Response
+from django.utils import timezone
 import datetime
+
+
+def send_email(to_address, subject, body):
+    region = 'us-west-2'
+    ses_client = boto3.client('ses', region_name=region)
+    response = ses_client.send_email(
+        Source='rpatoliya888@example.com',
+        Destination={'ToAddresses': [to_address]},
+        Message={
+            'Subject': {'Data': subject},
+            'Body': {'Html': {'Data': body}}
+        }
+    )
+    return response
+
+
+
 
 # Create your views here.
 class IssueTypeCRUDVIEW(ListCreateAPIView):
@@ -77,6 +96,11 @@ class IssueCRUDVIEW(APIView):
             print(serializer.errors)
             return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
 
+
+
+
+
+
 class UpdateIssueFields(APIView):
     # permission_classes = [IsAuthenticated]
 
@@ -104,7 +128,7 @@ class UpdateIssueFields(APIView):
             issue.status = status_obj
             print(issue.status)
 
-        elif request.data["field"] == 'priority_id':
+        elif request.data["field"] == 'priority':
             try:
                 priority_obj = Priority.objects.get(pk=int(request.data["value"]))
             except Priority.DoesNotExist:
@@ -112,7 +136,7 @@ class UpdateIssueFields(APIView):
 
             issue.priority = priority_obj
 
-        elif request.data["field"] == 'assignee_id':
+        elif request.data["field"] == 'assignee':
             try:
                 assignee_obj = User.objects.get(pk=int(request.data["value"]))
             except User.DoesNotExist:
@@ -120,7 +144,7 @@ class UpdateIssueFields(APIView):
 
             issue.assignee = assignee_obj
 
-        elif request.data["field"] == 'reporter_id':
+        elif request.data["field"] == 'reporter':
             try:
                 reporter_obj = User.objects.get(pk=int(request.data["value"]))
             except User.DoesNotExist:
@@ -138,21 +162,46 @@ class UpdateIssueFields(APIView):
 
         else:
             setattr(issue, request.data["field"], request.data["value"])
+        print(datetime.datetime.now())
+        issue.updated_date = datetime.datetime.now(tz=timezone.utc)
         issue.save()
+        send_email('akku29168@gmail.com', 'My email subject', '<p>My email body</p>')
         return Response({"message": "Fields updated successfully."},status=status.HTTP_200_OK)
 
 class PostCommentIssue(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request,issue_id):
-        comment = Comment.objects.filter(issue_id=issue_id).values("id", "issue_id", "user_id", "comment_text", "created_date")
-        serializer = CommentSerializer(data=comment,many=True)
-        print(comment)
-        if serializer.is_valid():
-            return Response({'success':serializer.data},status=status.HTTP_200_OK)
-        else:
-            return Response({'success':serializer.errors},status=status.HTTP_200_OK)
+        print(issue_id)
+        comment = Comment.objects.filter(issue_id=issue_id)
+        serializer = CommentSerializer(comment,many=True)
+        return Response({'success': serializer.data}, status=status.HTTP_200_OK)
 
-    def post(self,request,pk):
-        print()
-        return Response({'success':"msg"},status=status.HTTP_200_OK)
+    def post(self,request):
+        data = {
+            "comment_text":request.data['comment_text'],
+            "user_id":int(request.data['user_id']),
+            "issue_id":int(request.data['issue_id']),
+        }
+        print(data)
+        serializer = CreateCommentatorSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            comment = Comment.objects.filter(issue_id=int(request.data['issue_id']),user_id=int(request.data['user_id'])).last()
+            lastcomment = CommentSerializer(comment)
+            return Response({'lastcomment':lastcomment.data},status=status.HTTP_200_OK)
+        else:
+            return Response({'Error':serializer.errors},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self,request,pk):
+        comment = Comment.objects.filter(pk=pk).delete()
+        return Response({"success":"Comment deleted successfully"})
+
+    def patch(self,request,pk):
+        try:
+            comment = Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            return Response({"error": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+        comment.comment_text = request.data["comment_text"]
+        comment.save()
+        return Response({"success": "Comment Updated successfully"})
