@@ -8,11 +8,17 @@ class Status(models.Model):
     name = models.CharField(max_length=50)
     icon = models.ImageField(upload_to='icons/',storage=MediaCloudinaryStorage(), blank=True, max_length=1000)
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         db_table = "status"
 class Priority(models.Model):
     name = models.CharField(max_length=50)
     icon = models.ImageField(upload_to='icons/',storage=MediaCloudinaryStorage(), blank=True, max_length=1000)
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
         db_table = "priority"
@@ -22,6 +28,9 @@ class IssueType(models.Model):
 
     class Meta:
         db_table = "issue_type"
+
+    def __str__(self):
+        return f"{self.name}"
 class Issue(models.Model):
     issue_summary = models.CharField(max_length=200)
     issue_description = models.TextField()
@@ -38,6 +47,9 @@ class Issue(models.Model):
 
     class Meta:
         db_table = "issue"
+
+    def __str__(self):
+        return f"{self.issue_summary}"
 class Comment(models.Model):
     issue_id = models.ForeignKey(Issue,related_name="comment",on_delete=models.CASCADE)
     user_id = models.ForeignKey(User,related_name="commentator",on_delete=models.CASCADE)
@@ -45,6 +57,8 @@ class Comment(models.Model):
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.comment_text}"
     class Meta:
         db_table = "comment"
 class ActivityLog(models.Model):

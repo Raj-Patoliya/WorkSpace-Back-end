@@ -63,6 +63,7 @@ class AllProjectForUser(APIView):
         for us in projectid:
             data = Project.objects.filter(id=us["project_id"]).all()
             seri = ProjectSerializer(data, many=True)
+            # serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=us["project_id"]), many=True)
             project.append(seri.data[0])
         res["projects"] = project
         res["id"] = serializer.data["id"]
@@ -78,22 +79,22 @@ class AllProjectForUser(APIView):
         res["updated_at"] = serializer.data["updated_at"]
         return Response({"data":res})
 
+
+
+
+
 class ProjectIssueView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,keys):
         serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=keys), many=True)
-        # project = Project.objects.filter(key=keys).first()
-        # serializer = ProjectIssueSerializer(Issue.objects.all(),many=True)
         return Response({"data":serializer.data})
 
 class TeamCrudView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request,keys):
-        # print(keys)
         serializer = ProjectTeamSerializer(Team.objects.filter(project__key=keys), many=True)
-        # print(serializer.data)
         return Response({"data":serializer.data})
 
     def post(self,request):

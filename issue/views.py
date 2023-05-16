@@ -1,35 +1,20 @@
 from django.shortcuts import render
-import boto3
+# import boto3
+# from botocore.exceptions import ClientError
+from django.core.mail import send_mail,EmailMessage
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework import status
+from project.projectSerializer import *
 from issue.issueSerializer import *
 from issue.models import *
 from rest_framework.views import Response
 from django.utils import timezone
 import datetime
 
-
-def send_email(to_address, subject, body):
-    region = 'us-west-2'
-    ses_client = boto3.client('ses', region_name=region)
-    response = ses_client.send_email(
-        Source='rpatoliya888@example.com',
-        Destination={'ToAddresses': [to_address]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {'Html': {'Data': body}}
-        }
-    )
-    return response
-
-
-
-
-# Create your views here.
 class IssueTypeCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = IssueType.objects.all()
@@ -54,6 +39,23 @@ class ActivityLogCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = ActivityLog.objects.all()
     serializer_class = ActivityLogSerializer
+
+def send_email(subject,message):
+    subject = subject
+    body = f"<p style='font-size:20px;'>{message}</p>"
+    from_email = "rajpatoliya888@gmail.com"
+    to_email = ["rpatoliya888@gmail.com"]
+
+    email = EmailMessage(subject, body, from_email, to_email)
+    email.content_subtype = "html"  # Set the content type as HTML
+
+    try:
+        email.send()
+        return True
+    except Exception as e:
+        print(f"An error occurred while sending the email: {str(e)}")
+        return False
+
 class IssueCRUDVIEW(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = IssueSerializer
@@ -96,13 +98,12 @@ class IssueCRUDVIEW(APIView):
             print(serializer.errors)
             return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
 
-
-
-
-
-
 class UpdateIssueFields(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+
+    def get_user_name(self,email):
+        user = User.objects.filter(email=email).values("fullName").first()
+        return user['fullName']
 
     def get(self,request,issue_id):
         try:
@@ -113,27 +114,31 @@ class UpdateIssueFields(APIView):
             return Response({"error": serializer.errors}, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request, issue_id):
+        message = ""
+        subject = ""
         try:
             issue = Issue.objects.get(pk=issue_id)
+            subject = f"Issue of {issue.project.key} has Been Updated"
         except Issue.DoesNotExist:
             return Response({"error": "Issue not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if request.data["field"] == 'status':
             try:
                 status_obj = Status.objects.get(pk=int(request.data["value"]))
-                print(status_obj)
+                message = f"{self.get_user_name(request.user)} has changed Status of issue {issue.project.key}-" \
+                          f"{issue.id} to " \
+                          f"{issue.status} to {status_obj}"
             except Status.DoesNotExist:
                 return Response({"error": "Status not found."}, status=status.HTTP_404_NOT_FOUND)
-
             issue.status = status_obj
-            print(issue.status)
-
         elif request.data["field"] == 'priority':
             try:
                 priority_obj = Priority.objects.get(pk=int(request.data["value"]))
             except Priority.DoesNotExist:
                 return Response({"error": "Priority not found."}, status=status.HTTP_404_NOT_FOUND)
-
+            message = f"{self.get_user_name(request.user)} has changed Priority of issue {issue.project.key}-" \
+                      f"{issue.id} to " \
+                      f"{issue.priority} to {priority_obj}"
             issue.priority = priority_obj
 
         elif request.data["field"] == 'assignee':
@@ -141,7 +146,9 @@ class UpdateIssueFields(APIView):
                 assignee_obj = User.objects.get(pk=int(request.data["value"]))
             except User.DoesNotExist:
                 return Response({"error": "Assignee not found."}, status=status.HTTP_404_NOT_FOUND)
-
+            message = f"{self.get_user_name(request.user)} has changed Assignee of issue {issue.project.key}-" \
+                      f"{issue.id}, From " \
+                      f"{self.get_user_name(issue.assignee)} to {self.get_user_name(assignee_obj)}"
             issue.assignee = assignee_obj
 
         elif request.data["field"] == 'reporter':
@@ -149,7 +156,9 @@ class UpdateIssueFields(APIView):
                 reporter_obj = User.objects.get(pk=int(request.data["value"]))
             except User.DoesNotExist:
                 return Response({"error": "Reporter not found."}, status=status.HTTP_404_NOT_FOUND)
-
+            message = f"{self.get_user_name(request.user)} has changed Assignee of issue {issue.project.key}-" \
+                      f"{issue.id}, From " \
+                      f"{self.get_user_name(issue.reporter)} to {self.get_user_name(reporter_obj)}"
             issue.reporter = reporter_obj
 
         elif request.data["field"] == 'issue_type_id':
@@ -157,15 +166,27 @@ class UpdateIssueFields(APIView):
                 issue_type_obj = IssueType.objects.get(pk=int(request.data["value"]))
             except IssueType.DoesNotExist:
                 return Response({"error": "Issue Type not found."}, status=status.HTTP_404_NOT_FOUND)
-
+            message = f"{self.get_user_name(request.user)} has changed Assignee of issue {issue.project.key}-" \
+                      f"{issue.id}, From " \
+                      f"{issue.issue_type} to {issue_type_obj}"
             issue.issue_type = issue_type_obj
 
         else:
             setattr(issue, request.data["field"], request.data["value"])
-        print(datetime.datetime.now())
+            message = f"{self.get_user_name(request.user)} has changed Assignee of issue {issue.project.key}-" \
+                      f"{issue.id}, From " \
+                      f"\"{issue.issue_summary}\" to {request.data['value']}"
         issue.updated_date = datetime.datetime.now(tz=timezone.utc)
         issue.save()
-        send_email('akku29168@gmail.com', 'My email subject', '<p>My email body</p>')
+
+        teamArr = list()
+        team = TeamEmailAddress(Team.objects.filter(project_id=issue.project.id),many=True)
+        to_email = list()
+        for team in team.data:
+            teamArr.append(team["email"])
+        for team in teamArr:
+            to_email.append(team["email"])
+        send_email(subject,message,to_email)
         return Response({"message": "Fields updated successfully."},status=status.HTTP_200_OK)
 
 class PostCommentIssue(APIView):

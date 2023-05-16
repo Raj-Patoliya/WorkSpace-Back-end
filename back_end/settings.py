@@ -199,8 +199,9 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-
-AWS_ACCESS_KEY_ID = 'AKIAT4IHTDHG7UPIHDXP'
-AWS_SECRET_ACCESS_KEY = 'BM1Mw2ZAf5eYwmFGTFPafssLVmdKmOpHXA6rUM/oszYs'
-AWS_REGION_NAME = 'us-west-2'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'rajpatoliya888'
+EMAIL_HOST_PASSWORD = 'srthepgzhuezhxwk'

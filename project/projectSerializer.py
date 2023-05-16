@@ -30,11 +30,15 @@ class ProjectTeamSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class ProjectSerializer(serializers.ModelSerializer):
     team = ProjectTeamSerializer(read_only=True,many=True)
+    issue = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
     def get_owner(self,obj):
         user = UserProfileSerializer(obj.created_by)
         return User.objects.filter(pk=user.data["id"]).values('id','profile','fullName')
+    def get_issue(self,obj):
+        issue = Issue.objects.filter(project_id=obj.id).values("id","issue_summary")
+        return issue
     class Meta:
         model = Project
         fields = '__all__'
@@ -71,32 +75,17 @@ class ProjectIssueSerializer(serializers.ModelSerializer):
     assignee = UserListSerializer(read_only=True)
     priority = PrioritySerializer(read_only=True)
 
-    # def get_issue(self,obj):
-    #     datas = Issue.objects.filter(project_id=obj.id).values("id","issue_summary","issue_description","reporter","assignee","status","priority","issue_type")
-    #     d = list()
-    #     for data in datas:
-    #         status = Status.objects.filter(pk=int(data["status"])).values("id", "name", "icon")
-    #         data["status"] = status
-    #
-    #         priority = Priority.objects.filter(pk=int(data["priority"])).values("id", "name", "icon")
-    #         data["priority"] = priority
-    #
-    #         issue_type = IssueType.objects.filter(pk=int(data["issue_type"])).values("id", "name", "icon")
-    #         # data["issue_type"] = issue_type
-    #         serializer = IssueTypeSerializer(data=issue_type)
-    #         # if serializer.is_valid():
-    #         #     print("------------------",serializer.data)
-    #         #     data["issue_type"] = serializer.data
-    #         # else:
-    #         #     print("------------------")
-    #         #     print(serializer.errors)
-    #         reporter = User.objects.filter(pk=int(data["reporter"])).values("id", "fullName", "profile")
-    #         data["reporter"] = reporter
-    #         assignee = User.objects.filter(pk=int(data["assignee"])).values("id", "fullName", "profile")
-    #         data["assignee"] = assignee
-    #         d.append(data)
-    #     return datas
-
     class Meta:
         model = Issue
         fields = "__all__"
+
+class TeamEmailAddress(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+
+    def get_email(self,obj):
+        user= User.objects.filter(pk=obj.user_id).values("email").first()
+        return user
+
+    class Meta:
+        model = Issue
+        fields = ["email"]
