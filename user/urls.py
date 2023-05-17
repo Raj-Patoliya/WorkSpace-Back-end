@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from .views import UserRegistration,UserProfile,UsersList,CurrentUser
+from .views import UserRegistration,UserProfile,UsersList,CurrentUser,UserIssueBasicDetails
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,5 +14,6 @@ urlpatterns = [
     path('login/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path("avtar/", UserProfile.as_view(),name="avtar"),
     path("list",UsersList.as_view(),name="users_list"),
-    path("current-user",CurrentUser.as_view(),name="CurrentUser")
+    path("current-user",CurrentUser.as_view(),name="CurrentUser"),
+    path("user-issue",UserIssueBasicDetails.as_view(),name="UserIssueBasicDetails")
 ]

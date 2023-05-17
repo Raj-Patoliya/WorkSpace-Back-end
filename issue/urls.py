@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
 from issue.views import *
-from issue.views import IssueTypeCRUDVIEW
-from django.conf import settings
-from django.conf.urls.static import static
 urlpatterns = [
     path("issue-type",IssueTypeCRUDVIEW.as_view(),name="issue-type"),
     path("issue-priority",PriorityCRUDVIEW.as_view(),name="issue-priority"),

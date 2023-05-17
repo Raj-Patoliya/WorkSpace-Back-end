@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from user.serializer import *
-from issue.issueSerializer import *
+from user.serializer import UserProfileSerializer,UserListSerializer
+from issue.issueSerializer import IssueTypeSerializer,StatusSerializer,PrioritySerializer
 from user.models import User,Role
 from project.models import *
 from issue.models import *
@@ -83,7 +83,7 @@ class TeamEmailAddress(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
 
     def get_email(self,obj):
-        user= User.objects.filter(pk=obj.user_id).values("email").first()
+        user = User.objects.filter(pk=obj.user_id).values("email").first()
         return user
 
     class Meta:

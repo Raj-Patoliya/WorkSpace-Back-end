@@ -1,11 +1,7 @@
 from rest_framework import serializers
 from issue.models import *
-from project.models import *
-
-from user.models import *
-from project.projectSerializer import *
-from user.serializer import *
-
+from project.models import Project,Team
+from user.models import User
 
 class IssueTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,3 +90,40 @@ class IssueCRUDSerializer(serializers.ModelSerializer):
         model = Issue
         fields = ('id', 'issue_summary', 'issue_description', 'priority', 'status', 'assignee', 'reporter',
                   'project','issue_type', 'created_date', 'updated_date',"index")
+
+
+class IssueBasicDetails(serializers.ModelSerializer):
+    issue_type = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_issue_type(self,obj):
+        issue_type = IssueType.objects.filter(pk=obj.issue_type.id).values("id","name","icon").first()
+        return issue_type
+
+    def get_project(self,obj):
+        project = Project.objects.filter(pk=obj.project.id).values("id","key","title").first()
+        return project
+
+    def get_status(self,obj):
+        issue_status = Status.objects.filter(pk=obj.status.id).values("id","name","icon").first()
+        return issue_status
+
+    class Meta:
+        model = Issue
+        exclude = ["issue_description","index","created_date","reporter","assignee","priority"]
+class GroupViseIssueSerializer(serializers.ModelSerializer):
+    assignedIssue = serializers.SerializerMethodField()
+    reportedIssue = serializers.SerializerMethodField()
+
+    def get_assignedIssue(self,obj):
+        issue = IssueBasicDetails(Issue.objects.filter(assignee=obj.id),many=True)
+        return issue.data
+
+    def get_reportedIssue(self,obj):
+        issue = IssueBasicDetails(Issue.objects.filter(reporter=obj.id),many=True)
+        return issue.data
+
+    class Meta:
+        model = User
+        exclude = ["password","user_permissions","last_login","is_active","is_staff","is_superuser","groups","is_verified"]

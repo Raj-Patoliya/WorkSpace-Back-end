@@ -1,6 +1,5 @@
 from django.db import models
 from user.models import *
-# Create your models here.
 class Project(models.Model):
     title = models.CharField(max_length=30)
     key = models.CharField(max_length=10)

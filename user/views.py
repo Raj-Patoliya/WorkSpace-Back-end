@@ -3,8 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView,Response,status
 from rest_framework import generics
-from .serializer import UserListSerializer,ProfileAvtarSerializer,UserProfileSerializer
-from .models import *
+from user.serializer import UserListSerializer,ProfileAvtarSerializer,UserProfileSerializer
+from user.models import User,ProfileAvtar
+from issue.issueSerializer import GroupViseIssueSerializer
 class UserRegistration(APIView):
     def post(self, request):
         user = User()
@@ -35,3 +36,9 @@ class CurrentUser(APIView):
     def get(self,request):
         user = UserProfileSerializer(User.objects.get(email=request.user))
         return Response({"currentUser":user.data},status=status.HTTP_200_OK)
+class UserIssueBasicDetails(APIView):
+
+    def get(self,request):
+        user = User.objects.get(email=request.user)
+        serializer = GroupViseIssueSerializer(user)
+        return Response(serializer.data)

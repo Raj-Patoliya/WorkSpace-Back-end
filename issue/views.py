@@ -1,15 +1,11 @@
-from django.shortcuts import render
-# import boto3
-# from botocore.exceptions import ClientError
 from django.core.mail import send_mail,EmailMessage
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import FileUploadParser
-from rest_framework.response import Response
 from rest_framework import status
-from project.projectSerializer import *
-from issue.issueSerializer import *
+from project.projectSerializer import TeamEmailAddress
+from issue.issueSerializer import IssueTypeSerializer,PrioritySerializer,StatusSerializer,CommentSerializer,\
+    AttachmentSerializer,ActivityLogSerializer,IssueSerializer,IssueCRUDSerializer,CreateCommentatorSerializer
 from issue.models import *
 from rest_framework.views import Response
 from django.utils import timezone
@@ -40,11 +36,11 @@ class ActivityLogCRUDVIEW(ListCreateAPIView):
     queryset = ActivityLog.objects.all()
     serializer_class = ActivityLogSerializer
 
-def send_email(subject,message):
+def send_email(subject,message,to_email):
     subject = subject
     body = f"<p style='font-size:20px;'>{message}</p>"
     from_email = "rajpatoliya888@gmail.com"
-    to_email = ["rpatoliya888@gmail.com"]
+    to_email = to_email
 
     email = EmailMessage(subject, body, from_email, to_email)
     email.content_subtype = "html"  # Set the content type as HTML
@@ -226,3 +222,4 @@ class PostCommentIssue(APIView):
         comment.comment_text = request.data["comment_text"]
         comment.save()
         return Response({"success": "Comment Updated successfully"})
+
