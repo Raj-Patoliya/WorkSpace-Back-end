@@ -42,3 +42,11 @@ class UserIssueBasicDetails(APIView):
         user = User.objects.get(email=request.user)
         serializer = GroupViseIssueSerializer(user)
         return Response(serializer.data)
+class ChangePassword(APIView):
+    def post(self,request):
+        user = User.objects.get(email=request.user)
+        if user.check_password(request.data["currentPassword"]):
+            user.set_password(request.data["newPassword"])
+            return Response({"success":"Password Changed Successfully"})
+        else:
+            return Response({"error": "Invalid Password"})

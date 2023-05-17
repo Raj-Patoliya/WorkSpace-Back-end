@@ -98,16 +98,16 @@ class IssueBasicDetails(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_issue_type(self,obj):
-        issue_type = IssueType.objects.filter(pk=obj.issue_type.id).values("id","name","icon").first()
-        return issue_type
+        issue_type = IssueTypeSerializer(IssueType.objects.get(pk=obj.issue_type.id))
+        return issue_type.data
 
     def get_project(self,obj):
         project = Project.objects.filter(pk=obj.project.id).values("id","key","title").first()
         return project
 
     def get_status(self,obj):
-        issue_status = Status.objects.filter(pk=obj.status.id).values("id","name","icon").first()
-        return issue_status
+        issue_status = StatusSerializer(Status.objects.get(pk=obj.status.id))
+        return issue_status.data
 
     class Meta:
         model = Issue
