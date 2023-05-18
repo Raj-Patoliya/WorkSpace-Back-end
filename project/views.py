@@ -36,7 +36,7 @@ class UserProjectCRUD(APIView):
         team.project = lastCreatedProject
         team.role = role
         team.save()
-        return Response({"data": "Hakuna Matata"})
+        return Response({"success": "Project Created successfully"},status=status.HTTP_200_OK)
 
     def put(self,request,pid):
         project = Project.objects.filter(pk=pid)
