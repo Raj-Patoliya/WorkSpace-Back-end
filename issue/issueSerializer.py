@@ -2,7 +2,7 @@ from rest_framework import serializers
 from issue.models import *
 from project.models import Project,Team
 from user.models import User
-
+from django.db.models import Q
 class IssueTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssueType
@@ -115,6 +115,11 @@ class IssueBasicDetails(serializers.ModelSerializer):
 class GroupViseIssueSerializer(serializers.ModelSerializer):
     assignedIssue = serializers.SerializerMethodField()
     reportedIssue = serializers.SerializerMethodField()
+    allIssue = serializers.SerializerMethodField()
+
+    def get_allIssue(self,obj):
+        issue = IssueBasicDetails(Issue.objects.filter(Q(assignee=obj.id) | Q(reporter=obj.id)), many=True)
+        return issue.data
 
     def get_assignedIssue(self,obj):
         issue = IssueBasicDetails(Issue.objects.filter(assignee=obj.id),many=True)

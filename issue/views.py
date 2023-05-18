@@ -64,7 +64,7 @@ class IssueCRUDVIEW(APIView):
             "project": project["id"],
             "issue_type": int(request.data["issueType"]),
             "issue_description": request.data["description"],
-            "status": int(request.data["status"]),
+            "status": int(request.data.get("status")),
             "priority": int(request.data["priority"]),
             "issue_summary": request.data["summary"],
             "assignee": int(request.data["assignee"]),
@@ -182,7 +182,7 @@ class UpdateIssueFields(APIView):
             teamArr.append(team["email"])
         for team in teamArr:
             to_email.append(team["email"])
-        send_email(subject,message,to_email)
+        data = send_email(subject,message,to_email)
         return Response({"message": "Fields updated successfully."},status=status.HTTP_200_OK)
 
 class PostCommentIssue(APIView):

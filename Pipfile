@@ -14,6 +14,7 @@ djangorestframework-simplejwt = "*"
 pillow = "*"
 django-cloudinary-storage = "*"
 boto3 = "*"
+django-environ = "*"
 
 [dev-packages]
 

@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-
+import environ
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,9 +85,9 @@ WSGI_APPLICATION = "back_end.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "workSpace",
-        "USER":"root",
-        "PASSWORD":"password",
+        "NAME": env("DATABASE_NAME"),
+        "USER":env('DATABASE_USER'),
+        "PASSWORD":env('DATABASE_PASS'),
     }
 }
 
@@ -131,9 +133,9 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dilgnd55s',
-    'API_KEY': '784371511373533',
-    'API_SECRET': 'u2NB0XwH5VOEBT2E_SK0NxGXld0',
+    'CLOUD_NAME': env("CLOUDINARY_CLOUD_NAME"),
+    'API_KEY': env("CLOUDINARY_API_KEY"),
+    'API_SECRET': env("CLOUDINARY_API_SECRET"),
 }
 STATIC_URL = "static/"
 MEDIA_URL = 'media/'
@@ -200,8 +202,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'rajpatoliya888'
-EMAIL_HOST_PASSWORD = 'srthepgzhuezhxwk'
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")

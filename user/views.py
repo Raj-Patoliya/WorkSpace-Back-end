@@ -47,6 +47,7 @@ class ChangePassword(APIView):
         user = User.objects.get(email=request.user)
         if user.check_password(request.data["currentPassword"]):
             user.set_password(request.data["newPassword"])
+            user.save()
             return Response({"success":"Password Changed Successfully"})
         else:
             return Response({"error": "Invalid Password"})
