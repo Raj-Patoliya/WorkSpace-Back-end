@@ -7,14 +7,15 @@ from user.models import User,Role
 from project.projectSerializer import *
 from django.http import Http404
 from issue.issueSerializer import *
+from rest_framework.pagination import LimitOffsetPagination
+from django.db.models import Q
 
+
+class MyCustomPagination(LimitOffsetPagination):
+    default_limit = 5
+    max_limit = 100
 class UserProjectCRUD(APIView):
     permission_classes = [IsAuthenticated]
-    # def get_object(self, pk):
-    #     try:
-    #         return User.objects.filter(pk=pk).get()
-    #     except Project.DoesNotExist:
-    #         raise Http404
 
     def get(self,request,keys):
         project = Project.objects.filter(key=keys).first()
@@ -47,41 +48,33 @@ class UserProjectCRUD(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class AllProjectForUser(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get_object(self, pk):
-        try:
-            return User.objects.filter(pk=pk).get()
-        except Project.DoesNotExist:
-            raise Http404
+    pagination_class = MyCustomPagination
 
     def get(self,request):
-        user = self.get_object(pk=request.user.id)
-        res = dict()
-        serializer = UserProjectSerializer(user)
-        projectid = Team.objects.filter(user_id=request.user.id).values("project_id")
-        project = list()
-        for us in projectid:
-            data = Project.objects.filter(id=us["project_id"]).all()
-            seri = ProjectSerializer(data, many=True)
-            # serializer = ProjectIssueSerializer(Issue.objects.filter(project__key=us["project_id"]), many=True)
-            project.append(seri.data[0])
-        res["projects"] = project
-        res["id"] = serializer.data["id"]
-        res["fullName"] = serializer.data["fullName"]
-        res["email"] = serializer.data["email"]
-        res["profile"] = serializer.data["profile"]
-        res["is_verified"] = serializer.data["is_verified"]
-        res["is_active"] = serializer.data["is_active"]
-        res["is_staff"] = serializer.data["is_staff"]
-        res["is_superuser"] = serializer.data["is_superuser"]
-        res["last_login"] = serializer.data["last_login"]
-        res["created_at"] = serializer.data["created_at"]
-        res["updated_at"] = serializer.data["updated_at"]
-        return Response({"data":res})
+        projectId = Team.objects.filter(user_id=request.user.id).values_list("project_id")
+        project = Project.objects.filter(id__in=projectId)
 
+        paginator = self.pagination_class()
+        paginated_projects = paginator.paginate_queryset(project, request)
 
+        data = ProjectSerializer(paginated_projects, many=True).data
+        return paginator.get_paginated_response(data)
 
+class CustomProjectForUser(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = MyCustomPagination
 
+    def post(self,request):
+        print(request.data["searchText"])
+        projectId = Team.objects.filter(user_id=request.user.id).values_list("project_id")
+        project = Project.objects.filter(Q(id__in=projectId) & Q(key__icontains=request.data["searchText"]) |
+                                         Q(title__icontains=request.data["searchText"]))
+
+        paginator = self.pagination_class()
+        paginated_projects = paginator.paginate_queryset(project, request)
+
+        data = ProjectSerializer(paginated_projects, many=True).data
+        return paginator.get_paginated_response(data)
 
 class ProjectIssueView(APIView):
     permission_classes = [IsAuthenticated]

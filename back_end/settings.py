@@ -141,15 +141,12 @@ STATIC_URL = "static/"
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
-
-
 AUTH_USER_MODEL = "user.User"
 CORS_ALLOW_ALL_ORIGINS = True
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
                'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        )
   }
 
 # AUTHENTICATION_BACKENDS = [
