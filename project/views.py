@@ -20,24 +20,32 @@ class UserProjectCRUD(APIView):
     def get(self,request,keys):
         project = Project.objects.filter(key=keys).first()
         serializer = ProjectSerializer(project, read_only=True)
+        print(serializer.data)
         return Response(serializer.data)
 
     def post(self,request):
-        project = Project()
-        project.title = request.data['title']
-        project.key = request.data['key']
-        project.description = request.data['description']
-        project.created_by = request.user
-        project.save()
-        lastCreatedProject = Project.objects.order_by('-start_date').first()
+        # project = Project()
+        data = {
+            "title":request.data['title'],
+            "key":request.data['key'],
+            "description":request.data['description'],
+            "created_by":request.user.id
+        }
+        # project.save()
+        serializer = CreateProjectSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            lastCreatedProject = Project.objects.order_by('-start_date').first()
+            role = Role.objects.order_by('id').first()
+            team = Team()
+            team.user = request.user
+            team.project = lastCreatedProject
+            team.role = role
+            team.save()
+            return Response({"success": "Project Created successfully"},status=status.HTTP_200_OK)
+        else:
+            return Response({"errors": serializer.errors["non_field_errors"]})
 
-        role = Role.objects.order_by('id').first()
-        team = Team()
-        team.user = request.user
-        team.project = lastCreatedProject
-        team.role = role
-        team.save()
-        return Response({"success": "Project Created successfully"},status=status.HTTP_200_OK)
 
     def put(self,request,pid):
         project = Project.objects.filter(pk=pid)

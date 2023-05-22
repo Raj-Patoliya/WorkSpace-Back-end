@@ -4,6 +4,7 @@ from issue.issueSerializer import IssueTypeSerializer,StatusSerializer,PriorityS
 from user.models import User,Role
 from project.models import *
 from issue.models import *
+from django.db.models import Q
 
 class AddTeamMemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,12 +17,25 @@ class AddTeamMemberSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Member Already Exist")
         return data
 
+class CreateProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+
+    def validate(self, data):
+        key = Project.objects.filter(key=data['key']).first()
+        if key:
+            raise serializers.ValidationError("This project Key is already in use")
+        title = Project.objects.filter(title=data["title"]).first()
+        if title:
+            raise serializers.ValidationError("This project title is already in use")
+        return data
 class ProjectTeamSerializer(serializers.ModelSerializer):
     # role = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
 
     def get_user(self,obj):
-        return User.objects.filter(pk=obj.user_id).values('id','profile','fullName')
+        return User.objects.filter(pk=obj.user_id).values('id','profile','fullName',"email")
     # def get_role(self,obj):
     #     return Role.objects.filter(pk=obj.role_id).values('id','name')
 

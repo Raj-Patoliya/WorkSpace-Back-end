@@ -27,10 +27,28 @@ class CommentCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-class AttachmentCRUDVIEW(ListCreateAPIView):
+class AttachmentCRUDVIEW(APIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Attachment.objects.all()
-    serializer_class = AttachmentSerializer
+    # queryset = Attachment.objects.all()
+    # serializer_class = AttachmentSerializer
+
+    def post(self,request):
+        print()
+        data ={
+            "attachment_file":request.FILES["attachment_file"],
+            "issue_id":request.data["issue_id"]
+        }
+        serializer = AttachmentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            attachment = Attachment.objects.filter(issue_id=request.data["issue_id"])
+            # .values("id", "attachment_file", "issue_id")
+            serializer = AttachmentSerializer(attachment,many=True)
+            return Response({"success":serializer.data})
+        else:
+            print(serializer.errors)
+            return Response({"error":serializer.errors})
+
 class ActivityLogCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = ActivityLog.objects.all()
@@ -222,4 +240,3 @@ class PostCommentIssue(APIView):
         comment.comment_text = request.data["comment_text"]
         comment.save()
         return Response({"success": "Comment Updated successfully"})
-
