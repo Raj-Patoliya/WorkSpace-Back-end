@@ -6,7 +6,6 @@ from rest_framework import generics
 from user.serializer import UserListSerializer,ProfileAvtarSerializer,UserProfileSerializer
 from user.models import User,ProfileAvtar
 from issue.issueSerializer import GroupViseIssueSerializer
-from allauth.account import views as allauth_views
 class UserRegistration(APIView):
     def post(self, request):
         user = User()
@@ -16,7 +15,6 @@ class UserRegistration(APIView):
         try:
             user.set_password(request.data["password"])
             user.save()
-            allauth_views.email_verification_sent(request, user=user)
             return Response({"success": "hakuna matata"})
         except Exception:
             return Response({"error": "Something Went Wrong"})

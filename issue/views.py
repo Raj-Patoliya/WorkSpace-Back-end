@@ -10,6 +10,7 @@ from issue.models import *
 from rest_framework.views import Response
 from django.utils import timezone
 import datetime
+import pandas as pd
 
 class IssueTypeCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -240,3 +241,29 @@ class PostCommentIssue(APIView):
         comment.comment_text = request.data["comment_text"]
         comment.save()
         return Response({"success": "Comment Updated successfully"})
+
+class IssueBulkUpload(APIView):
+    def post(self,request):
+        file = request.FILES.get('file')
+        df = pd.read_csv(file)
+        data_list = df.to_dict(orient='records')
+        print(data_list)
+        serializer = IssueCRUDSerializer(data=data_list, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": serializer.data})
+        else:
+            print(serializer.errors)
+            return Response({"errors": serializer.errors})
+        # for data in data_list:
+        #     serializer = IssueCRUDSerializer(data=data_list)
+        #     if serializer.is_valid():
+        #         data[""]
+        #
+        # print(data_list)
+
+        # serializer = IssueCRUDSerializer(data=data_list,many=True)
+        # if serializer.is_valid():
+        #     return Response({"success":serializer.data})
+        # else:
+        #     return Response({"errors": serializer.errors})

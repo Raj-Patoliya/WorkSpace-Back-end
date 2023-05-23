@@ -42,7 +42,8 @@ class Issue(models.Model):
     index = models.IntegerField()
     created_date = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
-    updated_date = models.DateTimeField()
+    updated_date =models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
 
     class Meta:
         db_table = "issue"

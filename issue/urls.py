@@ -13,4 +13,5 @@ urlpatterns = [
     path("issue-comment-create",PostCommentIssue().as_view(),name="create-comment"),
     path("issue-comment-delete/<int:pk>",PostCommentIssue().as_view(),name="delete-comment"),
     path("issue-comment-update/<int:pk>",PostCommentIssue().as_view(),name="update-comment"),
+    path("issue-bulk-upload",IssueBulkUpload.as_view(),name="issue-bulk-upload")
 ]

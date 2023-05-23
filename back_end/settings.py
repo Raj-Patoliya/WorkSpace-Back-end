@@ -42,12 +42,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework.authtoken",
     'rest_framework_simplejwt',
-    'allauth',
-    'allauth.account',
     'user',
     'project',
     'issue',
-
 ]
 
 MIDDLEWARE = [
@@ -152,11 +149,11 @@ REST_FRAMEWORK = {
         )
   }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-ACCOUNT_EMAIL_VERIFICATION_REDIRECT_URL = 'http://localhost:3000/profile'
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'social_core.backends.google.GoogleOAuth2',
+# ]
+#
 # SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "262127144528-i2ub3eulilaflshi1l1gqth3kpjc1jp6.apps.googleusercontent.com"
 # SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
 
