@@ -103,3 +103,18 @@ class TeamEmailAddress(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ["email"]
+
+class IssueFilterSerializer(serializers.ModelSerializer):
+    team = ProjectTeamSerializer(read_only=True,many=True)
+    issue = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
+
+    def get_owner(self,obj):
+        user = UserProfileSerializer(obj.created_by)
+        return User.objects.filter(pk=user.data["id"]).values('id','profile','fullName')
+    def get_issue(self,obj):
+        issue = Issue.objects.filter(project_id=obj.id).values("id","issue_summary")
+        return issue
+    class Meta:
+        model = Project
+        fields = '__all__'

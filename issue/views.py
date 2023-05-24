@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from project.projectSerializer import TeamEmailAddress
+from project.projectSerializer import TeamEmailAddress,ProjectIssueSerializer
 from issue.issueSerializer import IssueTypeSerializer,PrioritySerializer,StatusSerializer,CommentSerializer,\
     AttachmentSerializer,ActivityLogSerializer,IssueSerializer,IssueCRUDSerializer,CreateCommentatorSerializer
 from issue.models import *
@@ -11,7 +11,7 @@ from rest_framework.views import Response
 from django.utils import timezone
 import datetime
 import pandas as pd
-
+from django.db.models import Q
 class IssueTypeCRUDVIEW(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = IssueType.objects.all()
@@ -34,8 +34,7 @@ class AttachmentCRUDVIEW(APIView):
     # serializer_class = AttachmentSerializer
 
     def post(self,request):
-        print()
-        data ={
+        data = {
             "attachment_file":request.FILES["attachment_file"],
             "issue_id":request.data["issue_id"]
         }
@@ -78,7 +77,6 @@ class IssueCRUDVIEW(APIView):
     def post(self,request):
         project = Project.objects.filter(key=request.data["project"]).values("id").first()
         lastIndex = Issue.objects.filter(project_id=project["id"],status=int(request.data["status"])).order_by('-index').values("index").first()
-
         data = {
             "project": project["id"],
             "issue_type": int(request.data["issueType"]),
@@ -88,7 +86,7 @@ class IssueCRUDVIEW(APIView):
             "issue_summary": request.data["summary"],
             "assignee": int(request.data["assignee"]),
             "reporter": int(request.data["reporter"]),
-            "index":lastIndex["index"]+1,
+            "index":0,
             "updated_date": datetime.datetime.now()
         }
         serializer = IssueCRUDSerializer(data=data)
@@ -112,6 +110,10 @@ class IssueCRUDVIEW(APIView):
         else:
             print(serializer.errors)
             return Response({"error": "Something went wrong"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self,request,pk):
+        issue = Issue.objects.filter(pk=pk).delete()
+        return Response({"success": "Issue Deleted Successfully"}, status=status.HTTP_200_OK)
 
 class UpdateIssueFields(APIView):
     permission_classes = [IsAuthenticated]
@@ -255,15 +257,65 @@ class IssueBulkUpload(APIView):
         else:
             print(serializer.errors)
             return Response({"errors": serializer.errors})
-        # for data in data_list:
-        #     serializer = IssueCRUDSerializer(data=data_list)
-        #     if serializer.is_valid():
-        #         data[""]
-        #
-        # print(data_list)
 
-        # serializer = IssueCRUDSerializer(data=data_list,many=True)
-        # if serializer.is_valid():
-        #     return Response({"success":serializer.data})
-        # else:
-        #     return Response({"errors": serializer.errors})
+class IssueFilterView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        searchText = request.data["search"]
+        keys = request.data["keys"]
+        user = request.data["user"]
+        issue_type = request.data["type"]
+
+        if len(searchText) != 0 and len(user) != 0 and len(issue_type) != 0:
+            user_list = [int(x) for x in user.split(',')]
+            type_list = [int(x) for x in issue_type.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(issue_type_id__in=type_list) &
+                                          Q(assignee_id__in=user_list) &
+                                          Q(issue_summary__icontains=searchText))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        elif len(user) != 0 and len(issue_type) != 0:
+            user_list = [int(x) for x in user.split(',')]
+            type_list = [int(x) for x in issue_type.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(issue_type_id__in=type_list) &
+                                          Q(assignee_id__in=user_list))
+            serializer = ProjectIssueSerializer(issues, many=True)
+            return Response({"data": serializer.data})
+        elif len(searchText) != 0 and len(issue_type) != 0:
+            type_list = [int(x) for x in issue_type.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(issue_type_id__in=type_list) &
+                                          Q(issue_summary__icontains=searchText))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        elif len(searchText) != 0 and len(user) != 0:
+            user_list = [int(x) for x in user.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(assignee_id__in=user_list) &
+                                          Q(issue_summary__icontains=searchText))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        elif len(searchText):
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(issue_summary__icontains=searchText))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        elif len(issue_type) != 0:
+            type_list = [int(x) for x in issue_type.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(issue_type_id__in=type_list))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        elif len(user) != 0:
+            user_list = [int(x) for x in user.split(',')]
+            issues = Issue.objects.filter(Q(project__key=keys) &
+                                          Q(assignee_id__in=user_list))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})
+        else:
+            issues = Issue.objects.filter(Q(project__key=keys))
+            serializer = ProjectIssueSerializer(issues,many=True)
+            return Response({"data": serializer.data})

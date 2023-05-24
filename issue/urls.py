@@ -8,10 +8,12 @@ urlpatterns = [
     path("issue-comment",CommentCRUDVIEW.as_view(),name="issue-comment"),
     path("issue-attachment",AttachmentCRUDVIEW.as_view(),name="issue-attachment"),
     path("issue-activityLog",ActivityLogCRUDVIEW.as_view(),name="issue-activityLog"),
+    path("issue-delete/<int:pk>",IssueCRUDVIEW.as_view(),name="issues"),
     path("issues",IssueCRUDVIEW.as_view(),name="issues"),
     path("issue-update/<int:issue_id>",UpdateIssueFields.as_view(),name="update-issues"),
     path("issue-comment-create",PostCommentIssue().as_view(),name="create-comment"),
     path("issue-comment-delete/<int:pk>",PostCommentIssue().as_view(),name="delete-comment"),
     path("issue-comment-update/<int:pk>",PostCommentIssue().as_view(),name="update-comment"),
-    path("issue-bulk-upload",IssueBulkUpload.as_view(),name="issue-bulk-upload")
+    path("issue-bulk-upload",IssueBulkUpload.as_view(),name="issue-bulk-upload"),
+    path("issue-filter",IssueFilterView.as_view(),name="issue-filter")
 ]
