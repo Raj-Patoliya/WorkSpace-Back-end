@@ -1,4 +1,4 @@
-from django.core.mail import send_mail,EmailMessage
+from django.core.mail import EmailMessage
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -86,7 +86,7 @@ class IssueCRUDVIEW(APIView):
             "issue_summary": request.data["summary"],
             "assignee": int(request.data["assignee"]),
             "reporter": int(request.data["reporter"]),
-            "index":0,
+            "index": 0,
             "updated_date": datetime.datetime.now()
         }
         serializer = IssueCRUDSerializer(data=data)
@@ -249,8 +249,22 @@ class IssueBulkUpload(APIView):
         file = request.FILES.get('file')
         df = pd.read_csv(file)
         data_list = df.to_dict(orient='records')
-        print(data_list)
-        serializer = IssueCRUDSerializer(data=data_list, many=True)
+        data_array = list()
+        for obj in data_list:
+            data = dict()
+            data["issue_summary"] = obj["issue_summary"]
+            data["index"] = obj["index"]
+            data["issue_description"] = obj["issue_description"]
+            data["project"] = int(Project.objects.filter(key=obj["project"]).values("id").first()["id"])
+            assignee = User.objects.filter(email=obj["assignee"]).values("id").first()
+            data["assignee"] = int(assignee["id"])
+            data["issue_type"] = int(IssueType.objects.filter(name=obj["issue_type"]).values("id").first()["id"])
+            data["priority"] = int(Priority.objects.filter(name=obj["priority"]).values("id").first()["id"])
+            assignee = User.objects.filter(email=obj["reporter"]).values("id").first()
+            data["reporter"] = int(assignee["id"])
+            data["status"] = int(Status.objects.filter(name=obj["status"]).values("id").first()["id"])
+            data_array.append(data)
+        serializer = IssueCRUDSerializer(data=data_array, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"success": serializer.data})
