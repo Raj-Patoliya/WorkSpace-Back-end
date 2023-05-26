@@ -123,12 +123,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -148,14 +142,6 @@ REST_FRAMEWORK = {
                'rest_framework_simplejwt.authentication.JWTAuthentication',
         )
   }
-
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.ModelBackend',
-#     'social_core.backends.google.GoogleOAuth2',
-# ]
-#
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "262127144528-i2ub3eulilaflshi1l1gqth3kpjc1jp6.apps.googleusercontent.com"
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
 
 
 from datetime import timedelta

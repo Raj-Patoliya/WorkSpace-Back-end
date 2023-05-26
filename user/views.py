@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView,Response,status
 from rest_framework import generics
@@ -15,7 +13,7 @@ class UserRegistration(APIView):
         try:
             user.set_password(request.data["password"])
             user.save()
-            return Response({"success": "hakuna matata"})
+            return Response({"success": "Account created successfully"})
         except Exception:
             return Response({"error": "Something Went Wrong"})
 
@@ -35,12 +33,15 @@ class CurrentUser(APIView):
         user = UserProfileSerializer(User.objects.get(email=request.user))
         return Response({"currentUser":user.data},status=status.HTTP_200_OK)
 class UserIssueBasicDetails(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self,request):
         user = User.objects.get(email=request.user)
         serializer = GroupViseIssueSerializer(user)
         return Response(serializer.data)
-class ChangePassword(APIView):
+
+class ChangeInformation(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self,request):
         user = User.objects.get(email=request.user)
         if user.check_password(request.data["currentPassword"]):
@@ -49,3 +50,9 @@ class ChangePassword(APIView):
             return Response({"success":"Password Changed Successfully"})
         else:
             return Response({"error": "Invalid Password"})
+
+    def patch(self,request):
+        user = User.objects.get(email=request.user)
+        user.profile = request.data["profile"]
+        user.save()
+        return Response({"success",user},status=status.HTTP_200_OK)

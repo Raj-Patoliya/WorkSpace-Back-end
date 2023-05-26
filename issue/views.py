@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from project.projectSerializer import TeamEmailAddress,ProjectIssueSerializer
 from issue.issueSerializer import IssueTypeSerializer,PrioritySerializer,StatusSerializer,CommentSerializer,\
-    AttachmentSerializer,ActivityLogSerializer,IssueSerializer,IssueCRUDSerializer,CreateCommentatorSerializer
+    AttachmentSerializer,ActivityLogSerializer,IssueSerializer,IssueCRUDSerializer,CreateCommentatorSerializer,\
+    IssueImportSerializer
 from issue.models import *
 from rest_framework.views import Response
 from django.utils import timezone
@@ -29,9 +30,7 @@ class CommentCRUDVIEW(ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 class AttachmentCRUDVIEW(APIView):
-    # permission_classes = [IsAuthenticated]
-    # queryset = Attachment.objects.all()
-    # serializer_class = AttachmentSerializer
+    serializer_class = AttachmentSerializer
 
     def post(self,request):
         data = {
@@ -245,31 +244,16 @@ class PostCommentIssue(APIView):
         return Response({"success": "Comment Updated successfully"})
 
 class IssueBulkUpload(APIView):
-    def post(self,request):
+
+    def post(self, request):
         file = request.FILES.get('file')
         df = pd.read_csv(file)
         data_list = df.to_dict(orient='records')
-        data_array = list()
-        for obj in data_list:
-            data = dict()
-            data["issue_summary"] = obj["issue_summary"]
-            data["index"] = obj["index"]
-            data["issue_description"] = obj["issue_description"]
-            data["project"] = int(Project.objects.filter(key=obj["project"]).values("id").first()["id"])
-            assignee = User.objects.filter(email=obj["assignee"]).values("id").first()
-            data["assignee"] = int(assignee["id"])
-            data["issue_type"] = int(IssueType.objects.filter(name=obj["issue_type"]).values("id").first()["id"])
-            data["priority"] = int(Priority.objects.filter(name=obj["priority"]).values("id").first()["id"])
-            assignee = User.objects.filter(email=obj["reporter"]).values("id").first()
-            data["reporter"] = int(assignee["id"])
-            data["status"] = int(Status.objects.filter(name=obj["status"]).values("id").first()["id"])
-            data_array.append(data)
-        serializer = IssueCRUDSerializer(data=data_array, many=True)
+        serializer = IssueImportSerializer(data=data_list,many=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"success": serializer.data})
+            return Response({"success": "Data imported successfully"})
         else:
-            print(serializer.errors)
             return Response({"errors": serializer.errors})
 
 class IssueFilterView(APIView):

@@ -1,11 +1,7 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView,Response
 from rest_framework.permissions import IsAuthenticated
-from project.models import Project, Team
-from user.models import User,Role
 from project.projectSerializer import *
-from django.http import Http404
 from issue.issueSerializer import *
 from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Q
@@ -24,14 +20,12 @@ class UserProjectCRUD(APIView):
         return Response(serializer.data)
 
     def post(self,request):
-        # project = Project()
         data = {
             "title":request.data['title'],
             "key":request.data['key'],
             "description":request.data['description'],
             "created_by":request.user.id
         }
-        # project.save()
         serializer = CreateProjectSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

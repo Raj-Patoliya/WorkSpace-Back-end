@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from .views import UserRegistration,UserProfile,UsersList,CurrentUser,UserIssueBasicDetails,ChangePassword
+from .views import UserRegistration,UserProfile,UsersList,CurrentUser,UserIssueBasicDetails,ChangeInformation
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -16,5 +16,6 @@ urlpatterns = [
     path("list",UsersList.as_view(),name="users_list"),
     path("current-user",CurrentUser.as_view(),name="CurrentUser"),
     path("user-issue",UserIssueBasicDetails.as_view(),name="UserIssueBasicDetails"),
-    path("change-password",ChangePassword.as_view(),name="ChangePassword")
+    path("change-password",ChangeInformation.as_view(),name="ChangeInformation"),
+    path("change-profile",ChangeInformation.as_view(),name="ChangeInformation"),
 ]

@@ -47,9 +47,6 @@ class ProjectTeamSerializer(serializers.ModelSerializer):
     def get_user(self,obj):
         return User.objects.filter(pk=obj.user_id).values('id','profile','fullName').first()
 
-    # def get_role(self,obj):
-    #     return Role.objects.filter(pk=obj.role_id).values('id','name')
-
     class Meta:
         model = Team
         fields = '__all__'
@@ -132,3 +129,40 @@ class GroupViseIssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ["password","user_permissions","last_login","is_active","is_staff","is_superuser","groups","is_verified"]
+
+class IssueImportSerializer(serializers.Serializer):
+    issue_summary = serializers.CharField()
+    index = serializers.CharField()
+    issue_description = serializers.CharField()
+    project = serializers.CharField()
+    assignee = serializers.EmailField()
+    issue_type = serializers.CharField()
+    priority = serializers.CharField()
+    reporter = serializers.EmailField()
+    status = serializers.CharField()
+
+    def create(self, validated_data):
+        project_key = validated_data.pop('project')
+        assignee_email = validated_data.pop('assignee')
+        issue_type_name = validated_data.pop('issue_type')
+        priority_name = validated_data.pop('priority')
+        reporter_email = validated_data.pop('reporter')
+        status_name = validated_data.pop('status')
+
+        project = Project.objects.get(key=project_key)
+        assignee = User.objects.get(email=assignee_email)
+        issue_type = IssueType.objects.get(name=issue_type_name)
+        priority = Priority.objects.get(name=priority_name)
+        reporter = User.objects.get(email=reporter_email)
+        status = Status.objects.get(name=status_name)
+
+        issue = Issue.objects.create(
+            project=project,
+            assignee=assignee,
+            issue_type=issue_type,
+            priority=priority,
+            reporter=reporter,
+            status=status,
+            **validated_data
+        )
+        return issue
